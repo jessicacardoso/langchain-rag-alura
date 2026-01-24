@@ -11,23 +11,21 @@ Esse projeto contém uma implementação simples e completa de uma pipeline RAG:
 
 ## 🚀 Começando
 Para começar a usar o agente de regras de futebol, siga as etapas abaixo:
-1. Clone este repositório:
-   ```bash
-    git clone https://github.com/jessicacardoso/langchain-rag-alura
-    cd langchain-rag-alura
-    ```
-2. Instale as dependências necessárias:
+1. Instale as dependências necessárias:
     ```bash
     uv sync
     ```
-3. Configure suas credenciais de API no arquivo `.env`.
+2. Configure suas credenciais de API no arquivo `.env`.
     ```bash
+    GROQ_API_KEY=your_groq_api_key
     PINECONE_API_KEY=your_pinecone_api_key
     LANGSMITH_API_KEY=your_langsmith_api_key
     LANGSMITH_PROJECT=regras-futebol
     LANGSMITH_TRACING=true
+    INDEX_NAME=regras-futebol-index
+    EMBEDDING_MODEL_NAME=PORTULAN/serafim-900m-portuguese-pt-sentence-encoder
     ```
-4. Execute o script principal:
+3. Execute o script principal:
     ```bash
     python main.py
     ```
