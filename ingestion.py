@@ -3,6 +3,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -42,7 +43,7 @@ def split_text(documents, chunk_size=1000, chunk_overlap=0):
 
 def create_vector_store(
     documents,
-    embedding_model_name="sentence-transformers/all-MiniLM-L6-v2",
+    embedding_model_name="PORTULAN/serafim-900m-portuguese-pt-sentence-encoder",
     pinecone_index_name="my-pinecone-index",
 ):
     """
@@ -71,12 +72,15 @@ if __name__ == "__main__":
     pdf_path = "regras_futebol.pdf"
     docs = load_pdf(pdf_path)
     print(f"Loaded {len(docs)} pages from the PDF.")
-    docs = split_text(docs, chunk_size=1000, chunk_overlap=0)
-    print(f"Splitted into {len(docs)} chunks.")
+    chunks = split_text(docs, chunk_size=500, chunk_overlap=100)
+    print(f"Splitted into {len(chunks)} chunks.")
     print("Creating vector store...")
     vector_store = create_vector_store(
-        docs,
-        embedding_model_name="sentence-transformers/all-MiniLM-L6-v2",
+        chunks,
+        embedding_model_name=os.getenv(
+            "EMBEDDING_MODEL_NAME",
+            "PORTULAN/serafim-900m-portuguese-pt-sentence-encoder",
+        ),
         pinecone_index_name="regras-futebol-index",
     )
     print("Vector store created successfully.")
