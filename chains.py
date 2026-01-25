@@ -2,7 +2,7 @@ from operator import itemgetter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import (
     RunnablePassthrough,
@@ -14,7 +14,7 @@ from langchain_core.documents import Document
 from flashrank import Ranker, RerankRequest
 from langchain.chat_models import BaseChatModel
 from langchain_core.vectorstores import VectorStoreRetriever
-
+from langchain.messages import SystemMessage, HumanMessage
 from dotenv import load_dotenv
 import os
 
@@ -111,24 +111,26 @@ def main():
         search_type="similarity", search_kwargs={"k": 10}
     )
 
-    prompt_template = ChatPromptTemplate.from_template(
-        """Você é um assistente útil e preciso de RH. Use os seguintes trechos de contexto para responder à pergunta no final.
-        Se você não souber a resposta baseada no contexto, diga apenas que não sabe, não tente inventar uma resposta.
-        Responda de forma clara e profissional.
-
-        Contexto:
-        {context}
-
-        Pergunta: {question}
-        Resposta Útil:"""
+    prompt_template = ChatPromptTemplate.from_messages(
+        [
+            SystemMessage(
+                content=(
+                    "Você é um assistente útil e preciso de RH. Use os seguintes trechos de contexto para responder à pergunta no final. "
+                    "Se você não souber a resposta baseada no contexto, diga apenas que não sabe. "
+                    "Responda em português do Brasil de forma profissional."
+                )
+            ),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("user", "Contexto:\n{context}\n\nPergunta: {question}\nResposta Útil:"),
+        ]
     )
 
     # Exemplo de uso da chain
-    question = "Quem pode trabalhar em regime de home office e quais são as condições?"
+    question = "Quais comportamentos são considerados inadequados segundo o código de conduta da empresa?"
     llm_chain = create_retrieval_chain_with_sources(
         llm, retriever, ranker, prompt_template
     )
-    result = llm_chain.invoke({"question": question})
+    result = llm_chain.invoke({"question": question, "chat_history": []})
     print(f"\nQuestion: {question}")
     print(f"\nAnswer: {result['answer']}")
     print("\nFontes:\n")

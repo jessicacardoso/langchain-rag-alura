@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from langchain_groq import ChatGroq
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.messages import SystemMessage
 
 from flashrank import Ranker
 from chains import create_retrieval_chain_with_sources
@@ -86,24 +87,25 @@ def show_sources(docs):
 def main():
     st.title("🔎 Buscador Inteligente RH — Políticas Internas")
     st.caption("Powered by LangChain, Pinecone, FlashRank & Groq")
-
+    max_history_size = 10  # Limite de histórico de chat a considerar como contexto
     try:
         llm, retriever, ranker = load_resources()
     except Exception as e:
         st.error(f"Falha ao carregar recursos: {e}")
         return
 
-    # Prompt Template
-    prompt_template = ChatPromptTemplate.from_template(
-        """Você é um assistente útil e preciso de RH. Use os seguintes trechos de contexto para responder à pergunta no final.
-        Se você não souber a resposta baseada no contexto, diga apenas que não sabe, não tente inventar uma resposta.
-        Responda em português do Brasil de forma clara e profissional.
-
-        Contexto:
-        {context}
-
-        Pergunta: {question}
-        Resposta Útil:"""
+    prompt_template = ChatPromptTemplate.from_messages(
+        [
+            SystemMessage(
+                content=(
+                    "Você é um assistente útil e preciso de RH. Use os seguintes trechos de contexto para responder à pergunta no final. "
+                    "Se você não souber a resposta baseada no contexto, diga apenas que não sabe. "
+                    "Responda em português do Brasil de forma profissional."
+                )
+            ),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("user", "Contexto:\n{context}\n\nPergunta: {question}\nResposta Útil:"),
+        ]
     )
 
     # Inicializar histórico de chat na sessão se não existir
@@ -124,7 +126,9 @@ def main():
                 show_sources(message["sources"])
 
     if question := st.chat_input("Digite sua dúvida sobre normas ou processos..."):
-        st.session_state.messages.append({"role": "user", "content": question})
+        st.session_state.messages.append(
+            {"role": "user", "content": question, "sources": []}
+        )
         with st.chat_message("user"):
             st.markdown(question)
 
@@ -136,7 +140,14 @@ def main():
                     chain = create_retrieval_chain_with_sources(
                         llm, retriever, ranker, prompt_template
                     )
-                    result = chain.invoke({"question": question})
+                    result = chain.invoke(
+                        {
+                            "question": question,
+                            "chat_history": st.session_state.messages[
+                                -max_history_size:
+                            ],
+                        }
+                    )
                     resposta_texto = result["answer"]
                     docs = result["documents"]
 
