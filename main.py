@@ -52,7 +52,7 @@ def load_resources():
 
         retriever = vector_store.as_retriever(
             search_type="similarity",
-            search_kwargs={"k": 10},
+            search_kwargs={"k": 25},
         )
 
         return llm, retriever, ranker
