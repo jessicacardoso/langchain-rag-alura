@@ -1,9 +1,10 @@
+import os
+
+from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_pinecone import PineconeVectorStore
-from dotenv import load_dotenv
-import os
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
