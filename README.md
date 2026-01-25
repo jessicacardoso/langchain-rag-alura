@@ -6,9 +6,9 @@ Este repositório contém materiais e exemplos do curso "Arquiteturas RAG com LL
 ## 📚 Conteúdo do Curso
 
 Neste repositório, construímos um conjunto de três exemplos práticos de agentes utilizando Langchain e RAG:
-1. **Agente de Futebol — Regras de Futebol (FIFA)**: Um agente que responde perguntas sobre as regras do futebol com base no regulamento oficial da FIFA.
-2. **Agente Farmacêutico  — Bulas de Paracetamo e Dipirona**: Um agente que fornece informações sobre medicamentos com base em bulas reais de paracetamol e dipirona.
-3. **Agente de RH — Políticas de Empresa**: Um agente que responde dúvidas sobre políticas internas de uma empresa fictícia.
+1. **[Agente de Futebol — Regras de Futebol (FIFA)](https://github.com/jessicacardoso/langchain-rag-alura/tree/project/agente_futebol)**: Um agente que responde perguntas sobre as regras do futebol com base no regulamento oficial da FIFA.
+2. **[Agente Farmacêutico  — Bulas de Paracetamol e Dipirona](https://github.com/jessicacardoso/langchain-rag-alura/tree/project/agente_farmaceutico)**: Um agente que fornece informações sobre medicamentos com base em bulas reais de paracetamol e dipirona.
+3. **[Agente de RH — Políticas de Empresa](https://github.com/jessicacardoso/langchain-rag-alura/tree/project/agente_rh)**: Um agente que responde dúvidas sobre políticas internas de uma empresa fictícia.
 
 ## 🛠️ Tecnologias Utilizadas
 - [Langchain](https://langchain.com/): Biblioteca para construção de aplicações com modelos de linguagem.
